@@ -1,0 +1,42 @@
+export LANG=C
+
+dpkg-deb -R $1 $2
+
+mkdir $2  2> /dev/null
+
+for i in $2/Library/MobileSubstrate/DynamicLibraries/*dylib
+do
+sed -i "" 's/\/Library\//\/var\/LIB\//g' $i 2> /dev/null
+sed -i "" 's/\/System\/var\/LIB\//\/System\/Library\//g' $i 2> /dev/null
+sed -i "" 's/%@\/var\/LIB\//%@\/Library\//g' $i 2> /dev/null
+sed -i "" 's/mobile\/var\/LIB\//mobile\/Library\//g' $i 2> /dev/null
+sed -i "" 's/\/usr\/lib\/libsubstrate/\/var\/ulb\/libsubstrate/g' $i 2> /dev/null
+sed -i "" 's/\/usr\/lib\/libsubstitute/\/var\/ulb\/libsubstitute/g' $i 2> /dev/null
+sed -i "" 's/\/usr\/lib\/libprefs/\/var\/ulb\/libprefs/g' $i 2> /dev/null
+ldid -S $i 2> /dev/null
+done
+
+for i in $2/usr/lib/*dylib
+do
+sed -i "" 's/\/Library\//\/var\/LIB\//g' $i 2> /dev/null
+sed -i "" 's/\/System\/var\/LIB\//\/System\/Library\//g' $i 2> /dev/null
+sed -i "" 's/mobile\/var\/LIB\//mobile\/Library\//g' $i 2> /dev/null
+sed -i "" 's/%@\/var\/LIB\//%@\/Library\//g' $i 2> /dev/null
+sed -i "" 's/\/usr\/lib\/libsubstrate/\/var\/ulb\/libsubstrate/g' $i 2> /dev/null
+sed -i "" 's/\/usr\/lib\/libsubstitute/\/var\/ulb\/libsubstitute/g' $i 2> /dev/null
+sed -i "" 's/\/usr\/lib\/libprefs/\/var\/ulb\/libprefs/g' $i 2> /dev/null
+ldid -S $i 2> /dev/null
+done
+
+
+for i in $2/Library/PreferenceBundles/*/*
+do
+sed -i "" 's/\/Library\//\/var\/LIB\//g' $i  2> /dev/null
+sed -i "" 's/\/System\/var\/LIB\//\/System\/Library\//g' $i  2> /dev/null
+sed -i "" 's/%@\/var\/LIB\//\/%@\/Library\//g' $i 2> /dev/null
+sed -i "" 's/mobile\/var\/LIB\//mobile\/Library\//g' $i 2> /dev/null
+sed -i "" 's/\/usr\/lib\/libsubstrate/\/var\/ulb\/libsubstrate/g' $i  2> /dev/null
+sed -i "" 's/\/usr\/lib\/libsubstitute/\/var\/ulb\/libsubstitute/g' $i  2> /dev/null
+sed -i "" 's/\/usr\/lib\/libprefs/\/var\/ulb\/libprefs/g' $i 2> /dev/null
+ldid -S $i  2> /dev/null
+done

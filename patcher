@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export LANG=C
 export LC_CTYPE=C
 export LC_ALL=C
@@ -35,7 +37,7 @@ for i in $2/Library/PreferenceBundles/*/*
 do
 sed -i "" 's/\/Library\//\/var\/LIB\//g' $i  2> /dev/null
 sed -i "" 's/\/System\/var\/LIB\//\/System\/Library\//g' $i  2> /dev/null
-sed -i "" 's/%@\/var\/LIB\//\/%@\/Library\//g' $i 2> /dev/null
+sed -i "" 's/%@\/var\/LIB\//%@\/Library\//g' $i 2> /dev/null
 sed -i "" 's/mobile\/var\/LIB\//mobile\/Library\//g' $i 2> /dev/null
 sed -i "" 's/\/usr\/lib\/libsubstrate/\/var\/ulb\/libsubstrate/g' $i  2> /dev/null
 sed -i "" 's/\/usr\/lib\/libsubstitute/\/var\/ulb\/libsubstitute/g' $i  2> /dev/null

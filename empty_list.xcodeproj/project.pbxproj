@@ -8,20 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		821AE2D520CEA721000F8B16 /* IOKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 821AE2D420CEA721000F8B16 /* IOKit.tbd */; };
-		8240936E20EB9C1100C7E767 /* tar in Resources */ = {isa = PBXBuildFile; fileRef = 8240936D20EB9C1100C7E767 /* tar */; };
+		8224286C20EE32BF003EF1AD /* bins in Resources */ = {isa = PBXBuildFile; fileRef = 8224286B20EE32BF003EF1AD /* bins */; };
+		8224286E20EE36D9003EF1AD /* libjb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8224286D20EE36D9003EF1AD /* libjb.a */; };
 		8240937520EBA87300C7E767 /* iosbinpack.tar in Resources */ = {isa = PBXBuildFile; fileRef = 8240937320EBA87200C7E767 /* iosbinpack.tar */; };
 		8240937620EBA87300C7E767 /* tweaksupport.tar in Resources */ = {isa = PBXBuildFile; fileRef = 8240937420EBA87300C7E767 /* tweaksupport.tar */; };
 		8258AE7E20D3BF0600AB9BC0 /* osobject.c in Sources */ = {isa = PBXBuildFile; fileRef = 8258AE7D20D3BF0500AB9BC0 /* osobject.c */; };
 		8258AE8920D3EC7C00AB9BC0 /* dylibs in Resources */ = {isa = PBXBuildFile; fileRef = 8258AE8820D3EC7C00AB9BC0 /* dylibs */; };
 		82724E5920D2EF20005D0EC2 /* inject_criticald.m in Sources */ = {isa = PBXBuildFile; fileRef = 82724E5720D2EF1F005D0EC2 /* inject_criticald.m */; };
-		827C01E220CBFCDC00CD7A63 /* test in Resources */ = {isa = PBXBuildFile; fileRef = 827C01E120CBFCDC00CD7A63 /* test */; };
 		827D23B920EAD4D40081EDED /* bootstrap.m in Sources */ = {isa = PBXBuildFile; fileRef = 827D23B820EAD4D40081EDED /* bootstrap.m */; };
 		82FA9AA720D2E24600AFBE92 /* Readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 82FA9A9320D2E24600AFBE92 /* Readme.md */; };
 		82FA9AA820D2E24600AFBE92 /* screenshot.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 82FA9A9420D2E24600AFBE92 /* screenshot.jpg */; };
 		82FA9AAA20D2E24600AFBE92 /* jelbrek.m in Sources */ = {isa = PBXBuildFile; fileRef = 82FA9A9720D2E24600AFBE92 /* jelbrek.m */; };
 		82FA9AAB20D2E24600AFBE92 /* kern_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 82FA9A9920D2E24600AFBE92 /* kern_utils.m */; };
 		82FA9AAC20D2E24600AFBE92 /* kexecute.c in Sources */ = {isa = PBXBuildFile; fileRef = 82FA9A9A20D2E24600AFBE92 /* kexecute.c */; };
-		82FA9AAD20D2E24600AFBE92 /* libjb.m in Sources */ = {isa = PBXBuildFile; fileRef = 82FA9A9D20D2E24600AFBE92 /* libjb.m */; };
 		82FA9AAE20D2E24600AFBE92 /* offsetof.c in Sources */ = {isa = PBXBuildFile; fileRef = 82FA9A9E20D2E24600AFBE92 /* offsetof.c */; };
 		82FA9AAF20D2E24600AFBE92 /* patchfinder64.m in Sources */ = {isa = PBXBuildFile; fileRef = 82FA9AA120D2E24600AFBE92 /* patchfinder64.m */; };
 		82FA9AB020D2E24600AFBE92 /* qilin.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 82FA9AA320D2E24600AFBE92 /* qilin.o */; };
@@ -40,7 +39,8 @@
 
 /* Begin PBXFileReference section */
 		821AE2D420CEA721000F8B16 /* IOKit.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = IOKit.tbd; path = empty_list/jelbrek/IOKit.tbd; sourceTree = "<group>"; };
-		8240936D20EB9C1100C7E767 /* tar */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = tar; path = empty_list/tar; sourceTree = "<group>"; };
+		8224286B20EE32BF003EF1AD /* bins */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bins; path = empty_list/bins; sourceTree = "<group>"; };
+		8224286D20EE36D9003EF1AD /* libjb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjb.a; path = empty_list/jelbrek/libjb.a; sourceTree = "<group>"; };
 		8240937320EBA87200C7E767 /* iosbinpack.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; name = iosbinpack.tar; path = empty_list/iosbinpack.tar; sourceTree = "<group>"; };
 		8240937420EBA87300C7E767 /* tweaksupport.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; name = tweaksupport.tar; path = empty_list/tweaksupport.tar; sourceTree = "<group>"; };
 		8258AE7C20D3BF0500AB9BC0 /* osobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = osobject.h; sourceTree = "<group>"; };
@@ -49,7 +49,6 @@
 		82724E5720D2EF1F005D0EC2 /* inject_criticald.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = inject_criticald.m; sourceTree = "<group>"; };
 		82724E5820D2EF1F005D0EC2 /* inject_criticald.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inject_criticald.h; sourceTree = "<group>"; };
 		827C01E020CBF40D00CD7A63 /* qilin.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = qilin.o; path = empty_list/jelbrek/qilin.o; sourceTree = "<group>"; };
-		827C01E120CBFCDC00CD7A63 /* test */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = test; sourceTree = "<group>"; };
 		827D23B720EAD4D30081EDED /* bootstrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bootstrap.h; sourceTree = "<group>"; };
 		827D23B820EAD4D40081EDED /* bootstrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = bootstrap.m; sourceTree = "<group>"; };
 		82FA9A8D20D2E24600AFBE92 /* IOKitKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOKitKeys.h; sourceTree = "<group>"; };
@@ -67,7 +66,6 @@
 		82FA9A9A20D2E24600AFBE92 /* kexecute.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kexecute.c; sourceTree = "<group>"; };
 		82FA9A9B20D2E24600AFBE92 /* kexecute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kexecute.h; sourceTree = "<group>"; };
 		82FA9A9C20D2E24600AFBE92 /* libjb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libjb.h; sourceTree = "<group>"; };
-		82FA9A9D20D2E24600AFBE92 /* libjb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = libjb.m; sourceTree = "<group>"; };
 		82FA9A9E20D2E24600AFBE92 /* offsetof.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = offsetof.c; sourceTree = "<group>"; };
 		82FA9A9F20D2E24600AFBE92 /* offsetof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = offsetof.h; sourceTree = "<group>"; };
 		82FA9AA020D2E24600AFBE92 /* patchfinder64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = patchfinder64.h; sourceTree = "<group>"; };
@@ -105,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8224286E20EE36D9003EF1AD /* libjb.a in Frameworks */,
 				821AE2D520CEA721000F8B16 /* IOKit.tbd in Frameworks */,
 				82FA9AB020D2E24600AFBE92 /* qilin.o in Frameworks */,
 			);
@@ -116,6 +115,7 @@
 		827C01DE20CBF40D00CD7A63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8224286D20EE36D9003EF1AD /* libjb.a */,
 				821AE2D420CEA721000F8B16 /* IOKit.tbd */,
 				827C01E020CBF40D00CD7A63 /* qilin.o */,
 			);
@@ -140,7 +140,6 @@
 				82FA9A9A20D2E24600AFBE92 /* kexecute.c */,
 				82FA9A9B20D2E24600AFBE92 /* kexecute.h */,
 				82FA9A9C20D2E24600AFBE92 /* libjb.h */,
-				82FA9A9D20D2E24600AFBE92 /* libjb.m */,
 				82FA9A9E20D2E24600AFBE92 /* offsetof.c */,
 				82FA9A9F20D2E24600AFBE92 /* offsetof.h */,
 				82FA9AA020D2E24600AFBE92 /* patchfinder64.h */,
@@ -184,9 +183,9 @@
 		B060B7D120BC0624001FD0CE = {
 			isa = PBXGroup;
 			children = (
+				8224286B20EE32BF003EF1AD /* bins */,
 				8240937320EBA87200C7E767 /* iosbinpack.tar */,
 				8240937420EBA87300C7E767 /* tweaksupport.tar */,
-				8240936D20EB9C1100C7E767 /* tar */,
 				8258AE8820D3EC7C00AB9BC0 /* dylibs */,
 				B060B7DC20BC0624001FD0CE /* empty_list */,
 				B060B7DB20BC0624001FD0CE /* Products */,
@@ -221,7 +220,6 @@
 				B00730BD20C7273C005995FA /* offsets.h */,
 				B00730BE20C72BCB005995FA /* kmem.h */,
 				B00730BF20C730BC005995FA /* README */,
-				827C01E120CBFCDC00CD7A63 /* test */,
 			);
 			path = empty_list;
 			sourceTree = "<group>";
@@ -289,10 +287,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				827C01E220CBFCDC00CD7A63 /* test in Resources */,
 				8240937520EBA87300C7E767 /* iosbinpack.tar in Resources */,
 				8240937620EBA87300C7E767 /* tweaksupport.tar in Resources */,
-				8240936E20EB9C1100C7E767 /* tar in Resources */,
+				8224286C20EE32BF003EF1AD /* bins in Resources */,
 				B060B7EA20BC0624001FD0CE /* LaunchScreen.storyboard in Resources */,
 				82FA9AA720D2E24600AFBE92 /* Readme.md in Resources */,
 				B060B7E720BC0624001FD0CE /* Assets.xcassets in Resources */,
@@ -324,7 +321,6 @@
 				82FA9ABB20D2E38400AFBE92 /* unlocknvram.c in Sources */,
 				82FA9AAE20D2E24600AFBE92 /* offsetof.c in Sources */,
 				827D23B920EAD4D40081EDED /* bootstrap.m in Sources */,
-				82FA9AAD20D2E24600AFBE92 /* libjb.m in Sources */,
 				82FA9AB820D2E37900AFBE92 /* remap_tfp_set_hsp.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

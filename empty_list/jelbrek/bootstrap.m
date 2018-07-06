@@ -10,19 +10,22 @@
 
 #include "jelbrek.h"
 #include "shell.h"
+#include "libjb.h"
 
 int bootstrap() {
     NSLog(@"Installing bootstrap...");
+      
+    chdir("/var/containers/Bundle/");
     
-    chmod([[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/tar"] UTF8String], 0777);
+    FILE *bootstrap = fopen((char*)[[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/iosbinpack.tar"] UTF8String], "r");
+    untar(bootstrap, "/var/containers/Bundle/");
+    fclose(bootstrap);
+
+    FILE *tweaks = fopen((char*)[[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/tweaksupport.tar"] UTF8String], "r");
+    untar(tweaks, "/var/containers/Bundle/");
+    fclose(tweaks);
     
-    int rv = launch((char*)[[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/tar"] UTF8String], "-xvf", (char*)[[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/iosbinpack.tar"] UTF8String], "-C", "/var/containers/Bundle/", NULL, NULL, NULL);
-    printf("Running tar, rv = %d\n", rv);
-    
-    int rv2 = launch((char*)[[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/tar"] UTF8String], "-xvf", (char*)[[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/tweaksupport.tar"] UTF8String], "-C", "/var/containers/Bundle/", NULL, NULL, NULL);
-    printf("Running tar, rv = %d\n", rv2);
-    
-    if (rv || rv2) return -1;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:@"/var/containers/Bundle/tweaksupport"] || ![[NSFileManager defaultManager] fileExistsAtPath:@"/var/containers/Bundle/iosbinpack64"]) return -1;
     return 0;
 }
 

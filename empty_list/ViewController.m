@@ -19,6 +19,7 @@
 #include "remap_tfp_set_hsp.h"
 #include "inject_criticald.h"
 #include "bootstrap.h"
+#include "libjb.h"
 
 //#include "amfid.h"
 
@@ -28,7 +29,6 @@
 
 #include <ifaddrs.h>
 #include <arpa/inet.h>
-
 
 mach_port_t taskforpidzero;
 uint64_t kernel_base, kslide;
@@ -90,6 +90,7 @@ uint64_t find_kernel_base() {
 @end
 
 @implementation ViewController
+
 
 //https://stackoverflow.com/questions/6807788/how-to-get-ip-address-of-iphone-programmatically
 - (NSString *)getIPAddress {
@@ -164,7 +165,7 @@ uint64_t find_kernel_base() {
     entitlePid(getpid(), "task_for_pid-allow", true);
     entitlePid(getpid(), "com.apple.private.memorystatus", true);*/ //doesn't work?
     
-    NSString *tester = [NSString stringWithFormat:@"%@/iosbinpack64/test", @(bundle_path())]; //test binary
+    NSString *tester = [NSString stringWithFormat:@"%@/bins/tester", @(bundle_path())]; //test binary
     chmod([tester UTF8String], 777); //give it proper permissions
     
     if (launch((char*)[tester UTF8String], NULL, NULL, NULL, NULL, NULL, NULL, NULL)) castrateAmfid(); //patch amfid
@@ -188,8 +189,8 @@ uint64_t find_kernel_base() {
     sleep(1);
     
     //binary to test codesign patch
-    NSString *testbin = [NSString stringWithFormat:@"%@/test", @(bundle_path())]; //test binary
-    chmod([testbin UTF8String], 777); //give it proper permissions
+    NSString *testbin = [NSString stringWithFormat:@"%@/bins/test", @(bundle_path())]; //test binary
+    chmod([testbin UTF8String], 0777); //give it proper permissions
     //undoCredDonation(selfcred);
     
     //-------------codesign test-------------//
@@ -244,6 +245,12 @@ uint64_t find_kernel_base() {
             createSymlinks();
         }
         
+        [fm removeItemAtPath:@"/var/containers/Bundle/tweaksupport/Library/TweakInject/PreferenceLoader.dylib" error:nil];
+        [fm removeItemAtPath:@"/var/containers/Bundle/tweaksupport/usr/lib/libprefs.dylib" error:nil];
+        [fm moveItemAtPath:@"/var/containers/Bundle/dylibs/PreferenceLoader.dylib" toPath:@"/var/containers/Bundle/tweaksupport/Library/TweakInject/PreferenceLoader.dylib" error:nil];
+        [fm moveItemAtPath:@"/var/containers/Bundle/dylibs/libprefs.dylib" toPath:@"/var/containers/Bundle/tweaksupport/usr/lib/libprefs.dylib" error:nil];
+        
+
         NSString *dropbear = [NSString stringWithFormat:@"%@/usr/local/bin/dropbear", iosbinpack];
         NSString *bash = [NSString stringWithFormat:@"%@/bin/bash", iosbinpack];
         NSString *killall = [NSString stringWithFormat:@"%@/usr/bin/killall", iosbinpack];
@@ -277,7 +284,7 @@ uint64_t find_kernel_base() {
     
             if (strstr([file UTF8String], "jailbreakd") != 0) {
                 
-                printf("[*] Found jailbreakd plist, special handling\n");
+                printf("[*] Found jailbreakd plist, special handling\n", "");
                 
                 NSMutableDictionary *job = [NSPropertyListSerialization propertyListWithData:[NSData dataWithContentsOfFile:file] options:NSPropertyListMutableContainers format:nil error:nil];
                 

@@ -9,9 +9,19 @@
 /* Begin PBXBuildFile section */
 		821AE2D520CEA721000F8B16 /* IOKit.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 821AE2D420CEA721000F8B16 /* IOKit.tbd */; };
 		8224286C20EE32BF003EF1AD /* bins in Resources */ = {isa = PBXBuildFile; fileRef = 8224286B20EE32BF003EF1AD /* bins */; };
-		8224286E20EE36D9003EF1AD /* libjb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8224286D20EE36D9003EF1AD /* libjb.a */; };
 		8240937520EBA87300C7E767 /* iosbinpack.tar in Resources */ = {isa = PBXBuildFile; fileRef = 8240937320EBA87200C7E767 /* iosbinpack.tar */; };
 		8240937620EBA87300C7E767 /* tweaksupport.tar in Resources */ = {isa = PBXBuildFile; fileRef = 8240937420EBA87300C7E767 /* tweaksupport.tar */; };
+		824E5B292109C7E60014DADB /* amfi_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 824E5B272109C7E50014DADB /* amfi_utils.m */; };
+		824E5B2D2109CA300014DADB /* libjb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8224286D20EE36D9003EF1AD /* libjb.a */; };
+		824E5B302109CB140014DADB /* vnode_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 824E5B2E2109CB140014DADB /* vnode_utils.m */; };
+		824E5B362109CF100014DADB /* libplist++.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 824E5B312109CF100014DADB /* libplist++.a */; };
+		824E5B372109CF100014DADB /* libmerged.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 824E5B322109CF100014DADB /* libmerged.a */; };
+		824E5B382109CF100014DADB /* liboffsetfinder64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 824E5B332109CF100014DADB /* liboffsetfinder64.a */; };
+		824E5B392109CF100014DADB /* libplist.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 824E5B342109CF100014DADB /* libplist.a */; };
+		824E5B3A2109CF100014DADB /* libimg4tool.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 824E5B352109CF100014DADB /* libimg4tool.a */; };
+		824E5B3E2109CF8A0014DADB /* offsetfinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 824E5B3D2109CF8A0014DADB /* offsetfinder.cpp */; };
+		824E5B402109D16B0014DADB /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 824E5B3F2109D16B0014DADB /* libcompression.tbd */; };
+		824E5B412109D5160014DADB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B060B7E120BC0624001FD0CE /* ViewController.m */; };
 		8258AE7E20D3BF0600AB9BC0 /* osobject.c in Sources */ = {isa = PBXBuildFile; fileRef = 8258AE7D20D3BF0500AB9BC0 /* osobject.c */; };
 		8258AE8920D3EC7C00AB9BC0 /* dylibs in Resources */ = {isa = PBXBuildFile; fileRef = 8258AE8820D3EC7C00AB9BC0 /* dylibs */; };
 		82724E5920D2EF20005D0EC2 /* inject_criticald.m in Sources */ = {isa = PBXBuildFile; fileRef = 82724E5720D2EF1F005D0EC2 /* inject_criticald.m */; };
@@ -30,7 +40,6 @@
 		B00730BC20C723AE005995FA /* offsets.m in Sources */ = {isa = PBXBuildFile; fileRef = B00730BB20C723AE005995FA /* offsets.m */; };
 		B030E1F620BC0864000CDD4C /* sploit.c in Sources */ = {isa = PBXBuildFile; fileRef = B030E1F520BC0864000CDD4C /* sploit.c */; };
 		B060B7DF20BC0624001FD0CE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B060B7DE20BC0624001FD0CE /* AppDelegate.m */; };
-		B060B7E220BC0624001FD0CE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B060B7E120BC0624001FD0CE /* ViewController.m */; };
 		B060B7E520BC0624001FD0CE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B060B7E320BC0624001FD0CE /* Main.storyboard */; };
 		B060B7E720BC0624001FD0CE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B060B7E620BC0624001FD0CE /* Assets.xcassets */; };
 		B060B7EA20BC0624001FD0CE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B060B7E820BC0624001FD0CE /* LaunchScreen.storyboard */; };
@@ -43,6 +52,18 @@
 		8224286D20EE36D9003EF1AD /* libjb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjb.a; path = empty_list/jelbrek/libjb.a; sourceTree = "<group>"; };
 		8240937320EBA87200C7E767 /* iosbinpack.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; name = iosbinpack.tar; path = empty_list/iosbinpack.tar; sourceTree = "<group>"; };
 		8240937420EBA87300C7E767 /* tweaksupport.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; name = tweaksupport.tar; path = empty_list/tweaksupport.tar; sourceTree = "<group>"; };
+		824E5B272109C7E50014DADB /* amfi_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = amfi_utils.m; sourceTree = "<group>"; };
+		824E5B282109C7E50014DADB /* amfi_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amfi_utils.h; sourceTree = "<group>"; };
+		824E5B2C2109CA190014DADB /* libjb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libjb.h; sourceTree = "<group>"; };
+		824E5B2E2109CB140014DADB /* vnode_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = vnode_utils.m; sourceTree = "<group>"; };
+		824E5B2F2109CB140014DADB /* vnode_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vnode_utils.h; sourceTree = "<group>"; };
+		824E5B312109CF100014DADB /* libplist++.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libplist++.a"; path = "empty_list/jelbrek/libs/libplist++.a"; sourceTree = "<group>"; };
+		824E5B322109CF100014DADB /* libmerged.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmerged.a; path = empty_list/jelbrek/libs/libmerged.a; sourceTree = "<group>"; };
+		824E5B332109CF100014DADB /* liboffsetfinder64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liboffsetfinder64.a; path = empty_list/jelbrek/libs/liboffsetfinder64.a; sourceTree = "<group>"; };
+		824E5B342109CF100014DADB /* libplist.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libplist.a; path = empty_list/jelbrek/libs/libplist.a; sourceTree = "<group>"; };
+		824E5B352109CF100014DADB /* libimg4tool.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libimg4tool.a; path = empty_list/jelbrek/libs/libimg4tool.a; sourceTree = "<group>"; };
+		824E5B3D2109CF8A0014DADB /* offsetfinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = offsetfinder.cpp; sourceTree = "<group>"; };
+		824E5B3F2109D16B0014DADB /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		8258AE7C20D3BF0500AB9BC0 /* osobject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = osobject.h; sourceTree = "<group>"; };
 		8258AE7D20D3BF0500AB9BC0 /* osobject.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = osobject.c; sourceTree = "<group>"; };
 		8258AE8820D3EC7C00AB9BC0 /* dylibs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dylibs; path = empty_list/dylibs; sourceTree = "<group>"; };
@@ -103,9 +124,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8224286E20EE36D9003EF1AD /* libjb.a in Frameworks */,
+				824E5B402109D16B0014DADB /* libcompression.tbd in Frameworks */,
 				821AE2D520CEA721000F8B16 /* IOKit.tbd in Frameworks */,
 				82FA9AB020D2E24600AFBE92 /* qilin.o in Frameworks */,
+				824E5B2D2109CA300014DADB /* libjb.a in Frameworks */,
+				824E5B362109CF100014DADB /* libplist++.a in Frameworks */,
+				824E5B372109CF100014DADB /* libmerged.a in Frameworks */,
+				824E5B382109CF100014DADB /* liboffsetfinder64.a in Frameworks */,
+				824E5B392109CF100014DADB /* libplist.a in Frameworks */,
+				824E5B3A2109CF100014DADB /* libimg4tool.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +142,12 @@
 		827C01DE20CBF40D00CD7A63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				824E5B3F2109D16B0014DADB /* libcompression.tbd */,
+				824E5B352109CF100014DADB /* libimg4tool.a */,
+				824E5B322109CF100014DADB /* libmerged.a */,
+				824E5B332109CF100014DADB /* liboffsetfinder64.a */,
+				824E5B342109CF100014DADB /* libplist.a */,
+				824E5B312109CF100014DADB /* libplist++.a */,
 				8224286D20EE36D9003EF1AD /* libjb.a */,
 				821AE2D420CEA721000F8B16 /* IOKit.tbd */,
 				827C01E020CBF40D00CD7A63 /* qilin.o */,
@@ -126,6 +159,12 @@
 			isa = PBXGroup;
 			children = (
 				82FA9A8B20D2E24600AFBE92 /* include */,
+				824E5B2C2109CA190014DADB /* libjb.h */,
+				824E5B3D2109CF8A0014DADB /* offsetfinder.cpp */,
+				824E5B2F2109CB140014DADB /* vnode_utils.h */,
+				824E5B2E2109CB140014DADB /* vnode_utils.m */,
+				824E5B282109C7E50014DADB /* amfi_utils.h */,
+				824E5B272109C7E50014DADB /* amfi_utils.m */,
 				82724E5820D2EF1F005D0EC2 /* inject_criticald.h */,
 				82724E5720D2EF1F005D0EC2 /* inject_criticald.m */,
 				827D23B720EAD4D30081EDED /* bootstrap.h */,
@@ -310,18 +349,21 @@
 				82FA9AAC20D2E24600AFBE92 /* kexecute.c in Sources */,
 				82FA9AB120D2E24600AFBE92 /* shell.c in Sources */,
 				B030E1F620BC0864000CDD4C /* sploit.c in Sources */,
+				824E5B3E2109CF8A0014DADB /* offsetfinder.cpp in Sources */,
 				8258AE7E20D3BF0600AB9BC0 /* osobject.c in Sources */,
-				B060B7E220BC0624001FD0CE /* ViewController.m in Sources */,
 				82FA9AAF20D2E24600AFBE92 /* patchfinder64.m in Sources */,
 				B060B7ED20BC0624001FD0CE /* main.m in Sources */,
+				824E5B412109D5160014DADB /* ViewController.m in Sources */,
 				B00730BC20C723AE005995FA /* offsets.m in Sources */,
 				B060B7DF20BC0624001FD0CE /* AppDelegate.m in Sources */,
 				82724E5920D2EF20005D0EC2 /* inject_criticald.m in Sources */,
 				82FA9AAB20D2E24600AFBE92 /* kern_utils.m in Sources */,
+				824E5B302109CB140014DADB /* vnode_utils.m in Sources */,
 				82FA9ABB20D2E38400AFBE92 /* unlocknvram.c in Sources */,
 				82FA9AAE20D2E24600AFBE92 /* offsetof.c in Sources */,
 				827D23B920EAD4D40081EDED /* bootstrap.m in Sources */,
 				82FA9AB820D2E37900AFBE92 /* remap_tfp_set_hsp.c in Sources */,
+				824E5B292109C7E60014DADB /* amfi_utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -466,6 +508,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/empty_list/jelbrek",
+					"$(PROJECT_DIR)/empty_list/jelbrek/libs",
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jakeashacks.rootlessJB;
@@ -490,6 +533,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/empty_list/jelbrek",
+					"$(PROJECT_DIR)/empty_list/jelbrek/libs",
 				);
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jakeashacks.rootlessJB;

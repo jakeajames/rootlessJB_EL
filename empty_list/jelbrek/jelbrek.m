@@ -2,13 +2,18 @@
 #include <err.h>
 #include "kern_utils.h"
 #include "patchfinder64.h"
-#include "libjb.h"
+#include "amfi_utils.h"
 #include "offsetof.h"
 #include "jelbrek.h"
 #include <sys/mount.h>
 #include "kexecute.h"
 #include "osobject.h"
+#include "vnode_utils.h"
+
 #include <sys/spawn.h>
+#include <sys/mman.h>
+#include <IOKitLib.h>
+#include <sys/snapshot.h>
 
 //#include "inject_criticald.h"
 //#include "unlocknvram.h"
@@ -24,39 +29,126 @@ void init_jelbrek(mach_port_t tfp0, uint64_t kernel_base) {
     setKernelSymbol("_kernproc", find_kernproc()-kslide);
 }
 
-kern_return_t trust_bin(const char *path) {
+int trustbin(const char *path) {
+    
+    NSMutableArray *paths = [NSMutableArray array];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    BOOL isDir = NO;
+    if (![fileManager fileExistsAtPath:@(path) isDirectory:&isDir]) {
+        printf("[-] Path does not exist!\n");
+        return -1;
+    }
+    
+    NSURL *directoryURL = [NSURL URLWithString:@(path)];
+    NSArray *keys = [NSArray arrayWithObject:NSURLIsDirectoryKey];
+    
+    if (isDir) {
+        NSDirectoryEnumerator *enumerator = [fileManager
+                                             enumeratorAtURL:directoryURL
+                                             includingPropertiesForKeys:keys
+                                             options:0
+                                             errorHandler:^(NSURL *url, NSError *error) {
+                                                 if (error) printf("[-] %s\n", [[error localizedDescription] UTF8String]);
+                                                 return YES;
+                                             }];
+        
+        for (NSURL *url in enumerator) {
+            NSError *error;
+            NSNumber *isDirectory = nil;
+            if (![url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&error]) {
+                if (error) continue;
+            }
+            else if (![isDirectory boolValue]) {
+                
+                int rv;
+                int fd;
+                uint8_t *p;
+                off_t sz;
+                struct stat st;
+                uint8_t buf[16];
+                
+                char *fpath = strdup([[url path] UTF8String]);
+                
+                if (strtail(fpath, ".plist") == 0 || strtail(fpath, ".nib") == 0 || strtail(fpath, ".strings") == 0 || strtail(fpath, ".png") == 0) {
+                    continue;
+                }
+                
+                rv = lstat(fpath, &st);
+                if (rv || !S_ISREG(st.st_mode) || st.st_size < 0x4000) {
+                    continue;
+                }
+                
+                fd = open(fpath, O_RDONLY);
+                if (fd < 0) {
+                    continue;
+                }
+                
+                sz = read(fd, buf, sizeof(buf));
+                if (sz != sizeof(buf)) {
+                    close(fd);
+                    continue;
+                }
+                if (*(uint32_t *)buf != 0xBEBAFECA && !MACHO(buf)) {
+                    close(fd);
+                    continue;
+                }
+                
+                p = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+                if (p == MAP_FAILED) {
+                    close(fd);
+                    continue;
+                }
+                
+                [paths addObject:@(fpath)];
+                printf("[*] Will trust %s\n", fpath);
+            }
+        }
+    }
+    else {
+        printf("[*] Will trust %s\n", path);
+        [paths addObject:@(path)];
+    }
+    
     uint64_t trust_chain = find_trustcache();
-    uint64_t amficache = find_amficache();
     
     printf("[*] trust_chain at 0x%llx\n", trust_chain);
-    printf("[*] amficache at 0x%llx\n", amficache);
     
-    struct trust_mem mem;
-    mem.next = kread64(trust_chain);
-    *(uint64_t *)&mem.uuid[0] = 0xabadbabeabadbabe;
-    *(uint64_t *)&mem.uuid[8] = 0xabadbabeabadbabe;
+    struct trust_chain fake_chain;
+    fake_chain.next = kread64(trust_chain);
+    *(uint64_t *)&fake_chain.uuid[0] = 0xabadbabeabadbabe;
+    *(uint64_t *)&fake_chain.uuid[8] = 0xabadbabeabadbabe;
     
-    int rv = grab_hashes(path, kread, amficache, mem.next);
+    int cnt = 0;
+    uint8_t hash[CC_SHA256_DIGEST_LENGTH];
+    hash_t *allhash = malloc(sizeof(hash_t) * [paths count]);
+    for (int i = 0; i != [paths count]; ++i) {
+        uint8_t *cd = getCodeDirectory((char*)[[paths objectAtIndex:i] UTF8String]);
+        if (cd != NULL) {
+            getSHA256inplace(cd, hash);
+            memmove(allhash[cnt], hash, sizeof(hash_t));
+            ++cnt;
+        }
+        else {
+            printf("[-] CD NULL\n");
+            continue;
+        }
+    }
     
-    size_t length = (sizeof(mem) + numhash * 20 + 0xFFFF) & ~0xFFFF;
+    fake_chain.count = cnt;
+    
+    size_t length = (sizeof(fake_chain) + cnt * sizeof(hash_t) + 0xFFFF) & ~0xFFFF;
     uint64_t kernel_trust = kalloc(length);
-    printf("[*] alloced: 0x%zx => 0x%llx\n", length, kernel_trust);
+    printf("[*] allocated: 0x%zx => 0x%llx\n", length, kernel_trust);
     
-    mem.count = numhash;
-    kwrite(kernel_trust, &mem, sizeof(mem));
-    kwrite(kernel_trust + sizeof(mem), allhash, numhash * 20);
+    kwrite(kernel_trust, &fake_chain, sizeof(fake_chain));
+    kwrite(kernel_trust + sizeof(fake_chain), allhash, cnt * sizeof(hash_t));
     kwrite64(trust_chain, kernel_trust);
     
-   //free(allhash);
-    //free(allkern);
-    //free(amfitab);
-    
-    if (rv == 0)
-        printf("[*] Successfully trusted binaries? return value=%d numhash=%d\n", rv, numhash);
-    else
-        printf("[*] Unknown error while trusting binaries! return value=%d numhash=%d", rv, numhash);
-    return rv;
+    return 0;
 }
+
 
 
 BOOL unsandbox(pid_t pid) {
@@ -218,57 +310,189 @@ void createDirAtPath(const char* path) {
     mkdir(path, 0755);
 }
 
-void mountDevAtPathAsRW(const char* devpath, const char* path) {
-    int rv = spawnAndShaiHulud("/sbin/mount_apfs", devpath, path, NULL, NULL, NULL); //QiLin
-    printf("[*] Mounting %s at %s, pspawn returned %d\n", devpath, path, rv); //return value is from posix_spawn instead of mount_apfs but it does work, at least it did for me
+struct hfs_mount_args {
+    char    *fspec;            /* block special device to mount */
+    uid_t    hfs_uid;        /* uid that owns hfs files (standard HFS only) */
+    gid_t    hfs_gid;        /* gid that owns hfs files (standard HFS only) */
+    mode_t    hfs_mask;        /* mask to be applied for hfs perms  (standard HFS only) */
+    u_int32_t hfs_encoding;    /* encoding for this volume (standard HFS only) */
+    struct    timezone hfs_timezone;    /* user time zone info (standard HFS only) */
+    int        flags;            /* mounting flags, see below */
+    int     journal_tbuffer_size;   /* size in bytes of the journal transaction buffer */
+    int        journal_flags;          /* flags to pass to journal_open/create */
+    int        journal_disable;        /* don't use journaling (potentially dangerous) */
+};
+
+int mountDevAtPathAsRW(const char* devpath, const char* path) {
+    struct hfs_mount_args mntargs;
+    bzero(&mntargs, sizeof(struct hfs_mount_args));
+    mntargs.fspec = (char*)devpath;
+    mntargs.hfs_mask = 1;
+    gettimeofday(NULL, &mntargs.hfs_timezone);
+    
+    int rvtmp = mount("apfs", path, 0, (void *)&mntargs);
+    printf("mounting: %d\n", rvtmp);
+    return rvtmp;
 }
 
-//running this as is will probably make the screen black and reboot a few seconds later, at least that happened to me on 11.1.2
-//interesting though after reboot the RWTEST file will be created on /var
 
-void remount1131(){
-    
-    char *devPath = strdup("/dev/disk0s1s1");
-    uint64_t devVnode = getVnodeAtPath(devPath);
-    printf("\n[*] vnode of /dev/disk0s1s1: 0x%llx\n", devVnode);
-    
-    
-    char *newMPPath = strdup("/private/var/mobile/tmp");
-    createDirAtPath(newMPPath);
-    mountDevAtPathAsRW(devPath, newMPPath);
-    
-    printf("[*] Clearing specflags \n");
-    printf("[*] Specflags before 0x%llx\n", kread64(kread64(devVnode + offsetof_v_specinfo) + offsetof_specflags));
-    kwrite64(kread64(devVnode + offsetof_v_specinfo) + offsetof_specflags, 0); // clear dev vnode’s v_specflags
-    printf("[*] Specflags now 0x%llx\n", kread64(kread64(devVnode + offsetof_v_specinfo) + offsetof_specflags));
-    
-    uint64_t newMPVnode = getVnodeAtPath(newMPPath);
-    printf("[*] Vnode of /private/var/mobile/tmp 0x%llx\n", newMPVnode);
-    uint64_t newMPMount = kread64(newMPVnode + offsetof_v_mount);
-    uint64_t newMPMountData = kread64(newMPMount + offsetof_mnt_data);
-    printf("[*] Mount data of /private/var/mobile/tmp: 0x%llx\n", newMPMountData);
-    
-    uint64_t rootVnode = kread64(find_rootvnode());
-    printf("[*] vnode of /: 0x%llx\n", rootVnode);
-    uint64_t rootMount = kread64(rootVnode + offsetof_v_mount);
-    uint32_t rootMountFlag = kread32(rootMount + offsetof_mnt_flag);
-    printf("[*] Removing RDONLY, NOSUID and ROOTFS flags\n");
-    printf("[*] Flags before 0x%x\n", rootMountFlag);
-    kwrite32(rootMount + offsetof_mnt_flag, rootMountFlag & ~ ( MNT_NOSUID | MNT_RDONLY | MNT_ROOTFS));
-    printf("[*] Flags now 0x%x\n", kread32(rootMount + offsetof_mnt_flag));
-    int rv = mount("apfs", "/", MNT_UPDATE, &devPath);
-    printf("[*] Remounting /, return value = %d\n", rv);
-    
-    printf("[*] Changning mount data, before: 0x%llx\n", kread64(rootMount + offsetof_mnt_data));
-    kwrite64(rootMount + offsetof_mnt_data, newMPMountData);
-    printf("[*] Mount data now: 0x%llx\n", kread64(rootMount + offsetof_mnt_data));
-    
-    int fd = open("/RWTEST", O_RDONLY);
-    if (fd == -1) {
-        fd = creat("/RWTEST", 0777);
-    } else {
-        printf("File already exists!\n");
+int list_snapshots(const char *vol)
+{
+    int dirfd = open(vol, O_RDONLY, 0);
+    if (dirfd < 0) {
+        perror("get_dirfd");
+        return -1;
     }
-    close(fd);
-    printf("Did we mount / as read+write? %s\n", [[NSFileManager defaultManager] fileExistsAtPath:@"/RWTEST"] ? "YES" : "NO");
+    
+    struct attrlist alist = { 0 };
+    char abuf[2048];
+    
+    alist.commonattr = ATTR_BULK_REQUIRED;
+    
+    int count = fs_snapshot_list(dirfd, &alist, &abuf[0], sizeof (abuf), 0);
+    if (count < 0) {
+        perror("fs_snapshot_list");
+        return -1;
+    }
+    
+    char *p = &abuf[0];
+    for (int i = 0; i < count; i++) {
+        char *field = p;
+        uint32_t len = *(uint32_t *)field;
+        field += sizeof (uint32_t);
+        attribute_set_t attrs = *(attribute_set_t *)field;
+        field += sizeof (attribute_set_t);
+        
+        if (attrs.commonattr & ATTR_CMN_NAME) {
+            attrreference_t ar = *(attrreference_t *)field;
+            char *name = field + ar.attr_dataoffset;
+            field += sizeof (attrreference_t);
+            (void) printf("%s\n", name);
+        }
+        
+        p += len;
+    }
+    
+    return (0);
+}
+
+char *copyBootHash() {
+    io_registry_entry_t chosen = IORegistryEntryFromPath(kIOMasterPortDefault, "IODeviceTree:/chosen");
+    
+    unsigned char buf[1024];
+    uint32_t size = 1024;
+    char *hash;
+    
+    if (chosen && chosen != -1) {
+        kern_return_t ret = IORegistryEntryGetProperty(chosen, "boot-manifest-hash", (char*)buf, &size);
+        IOObjectRelease(chosen);
+        
+        if (ret) {
+            printf("Unable to read boot-manifest-hash\n");
+            hash = NULL;
+        }
+        else {
+            char *result = (char*)malloc((2 * size) | 1); // even number | 1 = that number + 1, just because why not
+            memset(result, 0, (2 * size) | 1);
+            
+            int i = 0;
+            while (i < size) {
+                unsigned char ch = buf[i];
+                sprintf(result + 2 * i++, "%02X", ch);
+            }
+            printf("Hash: %s\n", result);
+            hash = strdup(result);
+        }
+    }
+    else {
+        printf("Unable to get IODeviceTree:/chosen port\n");
+        hash = NULL;
+    }
+    return hash;
+}
+
+char *find_system_snapshot() {
+    const char *hash = copyBootHash();
+    size_t len = strlen(hash);
+    char *str = (char*)malloc(len + 29);
+    memset(str, 0, len + 29); //fill it up with zeros?
+    if (!hash) return 0;
+    sprintf(str, "com.apple.os.update-%s", hash);
+    printf("System snapshot: %s\n", str);
+    return str;
+}
+
+int do_rename(const char *vol, const char *snap, const char *nw) {
+    int dirfd = open(vol, O_RDONLY);
+    if (dirfd < 0) {
+        perror("open");
+        return -1;
+    }
+    
+    int ret = fs_snapshot_rename(dirfd, snap, nw, 0);
+    close(dirfd);
+    if (ret != 0)
+        perror("fs_snapshot_rename");
+    return (ret);
+}
+
+int remount1131(){
+    
+    int rv = -1, ret;
+    
+    if (kCFCoreFoundationVersionNumber > 1451.51 && list_snapshots("/")) { //the second check makes it only run once
+        if (init_offsets()) {
+            
+            vfs_current_context = get_vfs_context();
+            
+            uint64_t devVnode = getVnodeAtPath("/dev/disk0s1s1");
+            uint64_t specinfo = kread64(devVnode + offsetof_v_specinfo);
+            
+            kwrite32(specinfo + offsetof_specflags, 0);
+            
+            if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/rootfsmnt"])
+                rmdir("/var/rootfsmnt");
+            
+            mkdir("/var/rootfsmnt", 0777);
+            chown("/var/rootfsmnt", 0, 0);
+            
+            printf("Temporarily setting kern ucred\n");
+            uint64_t creds = borrowCredsFromPid(0);
+            
+        
+            if (mountDevAtPathAsRW("/dev/disk0s1s1", "/var/rootfsmnt")) {
+                printf("Error mounting root at %s\n", "/var/rootfsmnt");
+            }
+            else {
+                printf("Disabling the APFS snapshot mitigations\n");
+                char *snap = find_system_snapshot();
+                if (snap && !do_rename("/var/rootfsmnt", snap, "orig-fs")) {
+                    rv = 0;
+                    unmount("/var/rootfsmnt", 0);
+                    rmdir("/var/rootfsmnt");
+                }
+            }
+            printf("Restoring our ucred\n");
+            undoCredDonation(creds);
+            vnode_put(devVnode);
+            
+            if (rv) {
+                printf("Failed to disable the APFS snapshot mitigations\n");
+            }
+            else {
+                printf("Disabled the APFS snapshot mitigations\n");
+                printf("Restarting\n");
+                sleep(2);
+                kill(1, SIGKILL);
+            }
+            ret = -1;
+        }
+        else ret = -1;
+    }
+    else {
+        ret = 0;
+        remount1126();
+    }
+    
+    return ret;
 }

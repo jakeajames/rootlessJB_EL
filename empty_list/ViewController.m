@@ -165,10 +165,10 @@ uint64_t find_kernel_base() {
     entitlePid(getpid(), "task_for_pid-allow", true);
     entitlePid(getpid(), "com.apple.private.memorystatus", true);*/ //doesn't work?
     
-    NSString *tester = [NSString stringWithFormat:@"%@/bins/tester", @(bundle_path())]; //test binary
-    chmod([tester UTF8String], 777); //give it proper permissions
+    //NSString *tester = [NSString stringWithFormat:@"%@/bins/tester", @(bundle_path())]; //test binary
+    //chmod([tester UTF8String], 777); //give it proper permissions
     
-    if (launch((char*)[tester UTF8String], NULL, NULL, NULL, NULL, NULL, NULL, NULL)) castrateAmfid(); //patch amfid
+    //if (launch((char*)[tester UTF8String], NULL, NULL, NULL, NULL, NULL, NULL, NULL)) castrateAmfid(); //patch amfid
     
     pid_t amfid = pid_for_name("amfid");
     platformize(amfid);
@@ -185,6 +185,7 @@ uint64_t find_kernel_base() {
     //amfid payload
     sleep(1);
     NSString *pl = [NSString stringWithFormat:@"%@/dylibs/amfid_payload.dylib", @(bundle_path())];
+    trustbin([pl UTF8String]);
     int rv2 = inject_dylib(amfid, (char*)[pl UTF8String]); //properly patch amfid
     sleep(1);
     
@@ -203,7 +204,7 @@ uint64_t find_kernel_base() {
     //-------------remount-------------//
     
     if (@available(iOS 11.3, *)) {
-        [self log:@"Remount eta son?"];
+        remount1131();
     } else if (@available(iOS 11.0, *)) {
         remount1126();
         [self log:[NSString stringWithFormat:@"Did we mount / as read+write? %s", [[NSFileManager defaultManager] fileExistsAtPath:@"/RWTEST"] ? "yes" : "no"]];
@@ -228,13 +229,6 @@ uint64_t find_kernel_base() {
     
     if (!rv && !rv2) {
         
-        NSFileManager *fm = [NSFileManager defaultManager];
-        
-        [fm removeItemAtPath:@"/var/containers/Bundle/dylibs" error:nil];
-        [fm copyItemAtPath:[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/dylibs"] toPath:@"/var/containers/Bundle/dylibs" error:nil];
-        
-        sleep(1);
-        
         if (![[NSFileManager defaultManager] fileExistsAtPath:@"/var/containers/Bundle/iosbinpack64"]) {
             if (bootstrap() != 0)  {
                 term_kernel();
@@ -243,6 +237,30 @@ uint64_t find_kernel_base() {
             }
             sleep(1);
             createSymlinks();
+        }
+        
+        NSFileManager *fm = [NSFileManager defaultManager];
+        NSError *error;
+        
+        [fm removeItemAtPath:@"/var/containers/Bundle/dylibs" error:&error];
+        if (error) {
+            printf("ERROR: %s\n", [[error localizedDescription] UTF8String]);
+            error = NULL;
+        }
+        [fm copyItemAtPath:[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/dylibs"] toPath:@"/var/containers/Bundle/dylibs" error:&error];
+        if (error) {
+            printf("ERROR: %s\n", [[error localizedDescription] UTF8String]);
+            error = NULL;
+        }
+        [fm removeItemAtPath:[NSString stringWithFormat:@"%@/bin/launchctl", iosbinpack] error:&error];
+        if (error) {
+            printf("ERROR: %s\n", [[error localizedDescription] UTF8String]);
+            error = NULL;
+        }
+        [fm moveItemAtPath:[NSString stringWithFormat:@"%@/bin/launchctl_", iosbinpack] toPath:[NSString stringWithFormat:@"%@/bin/launchctl", iosbinpack] error:&error];
+        if (error) {
+            printf("ERROR: %s\n", [[error localizedDescription] UTF8String]);
+            error = NULL;
         }
         
         [fm removeItemAtPath:@"/var/containers/Bundle/tweaksupport/Library/TweakInject/PreferenceLoader.dylib" error:nil];
@@ -273,8 +291,10 @@ uint64_t find_kernel_base() {
         
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *launchdaemons = [NSString stringWithFormat:@"%@/LaunchDaemons", iosbinpack];
-        NSString *launchctl = [NSString stringWithFormat:@"%@/bin/launchctl_", iosbinpack];
+        NSString *launchctl = [NSString stringWithFormat:@"%@/bin/launchctl", iosbinpack];
         NSArray *plists = [fileManager contentsOfDirectoryAtPath:launchdaemons error:nil];
+        
+        trustbin([launchctl UTF8String]);
         
         for (__strong NSString *file in plists) {
             
@@ -301,8 +321,8 @@ uint64_t find_kernel_base() {
         unlink("/var/log/jailbreakd-stderr.log");
         unlink("/var/log/jailbreakd-stdout.log");
         
-        launchAsPlatform((char*)[launchctl UTF8String], "unload", (char*)[launchdaemons UTF8String], NULL, NULL, NULL, NULL, NULL);
-        launchAsPlatform((char*)[launchctl UTF8String], "load", (char*)[launchdaemons UTF8String], NULL, NULL, NULL, NULL, NULL);
+        launch((char*)[launchctl UTF8String], "unload", (char*)[launchdaemons UTF8String], NULL, NULL, NULL, NULL, NULL);
+        launch((char*)[launchctl UTF8String], "load", (char*)[launchdaemons UTF8String], NULL, NULL, NULL, NULL, NULL);
         
         sleep(1);
         

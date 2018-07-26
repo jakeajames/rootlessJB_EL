@@ -834,54 +834,49 @@ uint64_t find_rootvnode(void) {
     return val + kerndumpbase;
 }
 
-addr_t find_trustcache(void) {
-    addr_t call, func, val;
-    addr_t ref = find_strref("com.apple.MobileFileIntegrity", 1, 1);
-    if (!ref) {
-        return 0;
-    }
-    ref -= kerndumpbase;
-    call = step64(kernel, ref, 32, INSN_CALL);
-    if (!call) {
-        return 0;
-    }
-    call = step64(kernel, call+4, 32, INSN_CALL);
-    func = follow_call64(kernel, call);
-    if (!func) {
-        return 0;
-    }
-    val = calc64(kernel, func, func + 16, 8);
-    if (!val) {
-        return 0;
-    }
-    return val + kerndumpbase;
-}
+//reversed from Electra
+//originally made by ninjaprawn
 
-addr_t find_amficache(void) {
-    addr_t call, func, bof, val;
-    addr_t ref = find_strref("com.apple.MobileFileIntegrity", 1, 1);
+addr_t find_trustcache(void) {
+    addr_t call, func;
+    addr_t ref = find_strref("%s: only allowed process can check the trust cache", 1, 1);
     if (!ref) {
         return 0;
     }
     ref -= kerndumpbase;
-    call = step64(kernel, ref, 32, INSN_CALL);
+    call = step64_back(kernel, ref, 44, INSN_CALL);
     if (!call) {
         return 0;
     }
-    call = step64(kernel, call+4, 32, INSN_CALL);
     func = follow_call64(kernel, call);
     if (!func) {
         return 0;
     }
-    bof = bof64(kernel, func - 256, func);
-    if (!bof) {
+    call = step64(kernel, func, 32, INSN_CALL);
+    if (!call) {
         return 0;
     }
-    val = calc64(kernel, bof, func, 9);
-    if (!val) {
+    func = follow_call64(kernel, call);
+    if (!func) {
         return 0;
     }
-    return val + kerndumpbase;
+    call = step64(kernel, func, 32, INSN_CALL);
+    if (!call) {
+        return 0;
+    }
+    call = step64(kernel, call + 4, 32, INSN_CALL);
+    if (!call) {
+        return 0;
+    }
+    func = follow_call64(kernel, call);
+    if (!func) {
+        return 0;
+    }
+    call = step64(kernel, func, 48, INSN_CALL);
+    if (!call) {
+        return 0;
+    }
+    return calc64(kernel, call, call + 24, 21) + kerndumpbase;
 }
 
 addr_t find_zone_map_ref(void) {

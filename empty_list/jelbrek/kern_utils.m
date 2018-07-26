@@ -11,7 +11,7 @@
 #include "offsetof.h"
 #include "../offsets.h"
 #include "kexecute.h"
-
+#include "vnode_utils.h"
 #include "QiLin.h"
 
 /****** Kernel utility stuff ******/
@@ -394,30 +394,16 @@ out_error:
 
 uint64_t getVnodeAtPath(const char *path) {
     extern uint64_t kslide;
-    
-    /*grab those using a decrypted kernelcache and nm/jtool. I am not able to make a patchfinder yet cus I'm still an amateur
-     
-     Run:
-     
-     nm /path/to/kernelcache | grep _vnode_lookup
-     nm /path/to/kernelcache | grep vfs_context_current
-     
-     */
-    
-    //iPad Air 2 iOS 11.1.2
-    //uint64_t ksym_vnode_lookup = 0xfffffff0071d6c84;
-    //uint64_t ksym_vfs_context_current = 0xfffffff0071f500c;
-
-    //iPad Air 2 iOS 11.3.1
-    uint64_t ksym_vnode_lookup = 0xfffffff0071dffac;
-    uint64_t ksym_vfs_context_current = 0xfffffff0071fe32c;
-    
-    uint64_t context = zm_fix_addr(kexecute(ksym_vfs_context_current + kslide, 1, 0, 0, 0, 0, 0, 0)); //grab the vfs_context; thanks iBSparkes aka PsychoTea
-    uint64_t vnode = kalloc(sizeof(unsigned int *)); //allocate memory on the kernel and grab the address
-    
-    kexecute(ksym_vnode_lookup + kslide, (uint64_t)path, 0, vnode, context, 0, 0, 0); //execute vnode_lookup()
-    
-    return kread64(vnode); //grab what vnode_lookup wrote in our vnode pointer
+    uint64_t *vnode_ptr = (uint64_t *)malloc(8);
+    if (vnode_lookup(path, 0, vnode_ptr, vfs_current_context)) {
+        printf("unable to get vnode from path for %s\n", path);
+        return -1;
+    }
+    else {
+        uint64_t vnode = *vnode_ptr;
+        free(vnode_ptr);
+        return vnode;
+    }
 }
 
 
